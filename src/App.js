@@ -7,6 +7,7 @@ import HomePage from './views/HomePage';
 import AddChore from './views/AddChore';
 import YourChores from './views/YourChores';
 import Scoreboard from './views/Scoreboard';
+import UpdateChorePage from './views/UpdateChore';
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
     {path: "/addchore", element: <AddChore />},
     {path: "/yourchores", element: <YourChores />},
     {path: "/scoreboard", element: <Scoreboard />},
+    {path: "/updatechore/:id", element: <UpdateChorePage />},
   ])
 
   return (
