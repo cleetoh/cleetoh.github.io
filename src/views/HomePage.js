@@ -133,7 +133,6 @@ export default function ChorePageHome() {
       <Container style={{ backgroundColor: "#f0f8ff", minHeight: "100vh", padding: "20px" }}>
         <h1 className="text-center mb-4" style={{fontFamily: "cursive"}}>Aashley's Chore Hub</h1>
         <h2 className="text-center mb-4" style={{fontFamily: "garamond", color: "darkslategray"}}>{`Welcome ${displayUsername || "User"}! Get Working!`}</h2>
-
         <div className="text-center" style={{ marginBottom: "20px" }}>
           <Button variant="primary" style={{ margin: "5px" }} as={Link} to="/addchore">Add New Chore</Button>
           <Button variant="info" style={{ margin: "5px" }} as={Link} to="/yourchores">View Your Chores</Button>
