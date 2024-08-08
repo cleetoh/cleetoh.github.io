@@ -17,20 +17,18 @@ export default function YourChores() {
 
   const fetchUserChores = async () => {
     if (user) {
-      const choresRef = collection(db, "chores");
-      const q = query(choresRef, where("assignedto", "==", displayName));
+      const choresRef = collection(db, "chores"); //chores collection in firebase
+      const q = query(choresRef, where("assignedto", "==", displayName)); //get chores assigned to __
       const querySnapshot = await getDocs(q);
-      const userChores = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const userChores = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data() //map data to array
+      })); 
       setChores(userChores);
     } else {
       console.error("No user is authenticated.");
     }
   };
 
-  useEffect(() => {
+  useEffect(() => { //display name
     const fetchUserData = async () => {
       if (user) {
         const userRef = doc(db, "users", user.uid);
@@ -44,34 +42,34 @@ export default function YourChores() {
     };
 
     fetchUserData();
-  }, [user]);
+  }, [user]); //run effect when user changes
 
   useEffect(() => {
     fetchUserChores();
   }, [user, displayName]); 
 
-  const handleCompleteChore = async (choreId, points) => {
+  const handleCompleteChore = async (choreId, points) => { //mark chore as complete; update points
     const choreRef = doc(db, "chores", choreId);
     await updateDoc(choreRef, { status: "Completed" });
 
     if (user) {
-      const userRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userRef);
-      const currentPoints = userDoc.data().points || 0;
+      const userRef = doc(db, "users", user.uid); //ref userdoc
+      const userDoc = await getDoc(userRef); //fetch user doc
+      const currentPoints = userDoc.data().points || 0; //fetch user pts
       await updateDoc(userRef, {
         points: currentPoints + points
       });
     }
 
-    fetchUserChores(); 
+    fetchUserChores(); //refresh on the spot
   };
 
-  const handleDeleteChore = async (choreId) => {
+  const handleDeleteChore = async (choreId) => { //delete
     await deleteDoc(doc(db, "chores", choreId));
     fetchUserChores(); 
   };
 
-  const handleUpdateChore = (choreId) => {
+  const handleUpdateChore = (choreId) => { //navigate to updatechore
     navigate(`/updatechore/${choreId}`); 
   };
 
@@ -89,10 +87,10 @@ export default function YourChores() {
         return statusOrder[a.status.toLowerCase()] - statusOrder[b.status.toLowerCase()];
       });
     }
-    return choresToSort;
+    return choresToSort; //no valid criteria
   };
 
-  const renderChores = () => {
+  const renderChores = () => { //list of chores
     const sortedChores = sortChores([...chores]);
     return sortedChores.map(chore => (
       <Col key={chore.id} sm={12} md={6} lg={4}>
@@ -147,7 +145,7 @@ function ChoreCard({ chore, onCompleteChore, onDeleteChore, onUpdateChore }) {
   const today = new Date();
   const isDueToday = choreDueDate.toDateString() === today.toDateString();
 
-  const chorePriority = priority || "medium"; 
+  const chorePriority = priority || "medium"; //default medium
 
   let priorityColor;
   switch (chorePriority.toLowerCase()) {

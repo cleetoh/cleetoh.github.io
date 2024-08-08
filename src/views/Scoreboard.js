@@ -46,7 +46,7 @@ export default function Scoreboard() {
     <>
       <Navigation />
       <Container style={{ backgroundColor: "#d9be66", minHeight: "100vh", padding: "20px" }}>
-        <h1 className="text-center mb-4" style={{fontFamily: "fantasy", outline: "5px solid #d966be"}}>Rankings</h1>
+        <h1 className="text-center mb-4" style={{fontFamily: "fantasy", outline: "5px solid #d966be"}}>Scoreboard</h1>
         <Row>
           {users.map(({ id, displayUsername, points }) => (
             <Col key={id} xs={12} className="mb-4"> 
@@ -66,10 +66,11 @@ export default function Scoreboard() {
                   {topUser && topUser.id === id && (
                     <FaCrown style={{
                       position: "absolute", 
-                      top: "10px", 
-                      right: "10px", 
-                      fontSize: "24px", 
-                      color: "#ffd700" 
+                      top: "-25px", 
+                      right: "-15px", 
+                      fontSize: "30px", 
+                      color: "#49496b",
+                      transform: 'rotate(30deg)',                     
                     }} />
                   )}
                 </Card.Body>

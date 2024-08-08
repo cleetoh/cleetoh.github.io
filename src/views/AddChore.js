@@ -15,20 +15,20 @@ export default function AddChorePage() {
   const [status, setStatus] = useState("Pending");
   const [priority, setPriority] = useState("Medium");
   const [points, setPoints] = useState(0); 
-  const [error, setError] = useState("");
+  const [error, setError] = useState(""); // error for form
 
   const [user] = useAuthState(auth); 
   const navigate = useNavigate(); 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  const handleSubmit = async (e) => { //form submission
+    e.preventDefault(); //prevent default form submission
+    setError(""); //reset error msg
 
     if (!chorename || !choredescription || !assignedto || !duedate || points <= 0) {
       setError("Please fill in all fields and assign a positive point value.");
     }
 
-    try {
+    try { //add into firebase
       await addDoc(collection(db, "chores"), {
         chorename,
         choredescription,

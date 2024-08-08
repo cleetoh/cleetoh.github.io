@@ -7,8 +7,10 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase";
 import Navigation from "./navibar";
 import { Timestamp } from "firebase/firestore";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-export function formatDate(timestamp) {
+export function formatDate(timestamp) {  //formating date (stored as {sec,ns})
   if (timestamp instanceof Timestamp) {
     return new Date(timestamp.seconds * 1000).toLocaleDateString();
   }
@@ -26,15 +28,15 @@ export default function ChorePageHome() {
   async function getAllChores() {
     const querySnapshot = await getDocs(collection(db, "chores"));
     const chores = querySnapshot.docs.map((doc) => {
-      return { id: doc.id, ...doc.data() };
+      return { id: doc.id, ...doc.data() }; //map data to array
     });
-    setChores(chores);
+    setChores(chores); //update state with fetched
   }
 
   const fetchUserData = async () => {
     if (user) {
-      const userDoc = doc(db, "users", user.uid);
-      const userData = await getDoc(userDoc);
+      const userDoc = doc(db, "users", user.uid); //ref to user doc
+      const userData = await getDoc(userDoc); // fetch user doc
       if (userData.exists()) {
         setDisplayUsername(userData.data().displayUsername);
       } else {
@@ -57,6 +59,16 @@ export default function ChorePageHome() {
     const totalChores = chores.length;
     const completedChores = chores.filter(chore => chore.status.toLowerCase() === "completed").length;
     return totalChores > 0 ? (completedChores / totalChores) * 100 : 0;
+  };
+
+  const checkDueDates = () => {
+    const today = new Date().toDateString();
+    chores.forEach((chore) => {
+      const choreDueDate = new Date(chore.duedate).toDateString();
+      if (choreDueDate === today && chore.status.toLowerCase() !== "completed") {
+        toast.info(`The chore "${chore.chorename}" is due today!`);
+      }
+    });
   };
 
   const sortChores = (choresToSort) => {
@@ -85,13 +97,14 @@ export default function ChorePageHome() {
     }
   }, [user, navigate]);
 
-  useEffect(() => {
+  useEffect(() => { //when chores change
     calculatePoints();
+    checkDueDates();
   }, [chores]);
 
   const handleDeleteChore = async (choreId) => {
     await deleteDoc(doc(db, "chores", choreId));
-    getAllChores(); 
+    getAllChores(); //refresh
   };
 
   const handleUpdateChore = async (choreId) => {
@@ -100,8 +113,8 @@ export default function ChorePageHome() {
 
   const ChoresRow = () => {
     const sortedChores = sortChores([...chores]);
-    return sortedChores.map((chore) => (
-      <ChoreCard 
+    return sortedChores.map((chore) => ( //array to get chorecard component
+      <ChoreCard  //component
         key={chore.id} 
         chore={chore} 
         onUpdatePoints={calculatePoints} 
@@ -118,7 +131,7 @@ export default function ChorePageHome() {
     <>
       <Navigation />
       <Container style={{ backgroundColor: "#f0f8ff", minHeight: "100vh", padding: "20px" }}>
-        <h1 className="text-center mb-4">Aashley's Chore Hub</h1>
+        <h1 className="text-center mb-4" style={{fontFamily: "cursive"}}>Aashley's Chore Hub</h1>
         <h2 className="text-center mb-4" style={{fontFamily: "garamond", color: "darkslategray"}}>{`Welcome ${displayUsername || "User"}! Get Working!`}</h2>
 
         <div className="text-center" style={{ marginBottom: "20px" }}>
@@ -149,6 +162,8 @@ export default function ChorePageHome() {
         <div className="text-center mb-4">
           <p>{`${chores.filter(chore => chore.status.toLowerCase() === "completed").length} out of ${chores.length} chores completed`}</p>
         </div>
+
+        <ToastContainer /> 
       </Container>
     </>
   );
@@ -163,15 +178,15 @@ function ChoreCard({ chore, onUpdatePoints, onRefreshChores, onDeleteChore, onUp
 
     await updateUserPoints(assignedto, points); 
 
-    onUpdatePoints(); 
-    await onRefreshChores();
+    onUpdatePoints(); //parent
+    await onRefreshChores(); //refresh chores list
   };
 
   const updateUserPoints = async (displayUsername, points) => {
     const userQuery = query(collection(db, "users"), where("displayUsername", "==", displayUsername));
     const userDocs = await getDocs(userQuery);
 
-    if (!userDocs.empty) {
+    if (!userDocs.empty) {  
       const userDoc = userDocs.docs[0]; 
       const userRef = doc(db, "users", userDoc.id);
       const userData = await getDoc(userRef);

@@ -20,10 +20,10 @@ export default function UpdateChorePage() {
   const [user] = useAuthState(auth); 
   const navigate = useNavigate(); 
 
-  useEffect(() => {
+  useEffect(() => { //fetch chore detail when initially created and inserted in DOM
     const fetchChoreDetails = async () => {
-      const choreRef = doc(db, "chores", id);
-      const choreDoc = await getDoc(choreRef);
+      const choreRef = doc(db, "chores", id); // reference to chore doc
+      const choreDoc = await getDoc(choreRef); // fetch doc from firebase
       if (choreDoc.exists()) {
         const choreData = choreDoc.data();
         setChorename(choreData.chorename);
@@ -39,7 +39,7 @@ export default function UpdateChorePage() {
       }
     };
     fetchChoreDetails();
-  }, [id]);
+  }, [id]); //dependency array to rerun effect if id changes
 
   const handleSubmit = async (e) => {
     e.preventDefault();
